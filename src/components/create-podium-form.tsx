@@ -36,8 +36,8 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  clubId: z.string().min(1, "Club is required"),
-  player: z.string().min(1, "Player name is required"),
+  clubId: z.string(),
+  player: z.string(),
   category: categoryZodEnum.refine((val) => val, {
     message: "Category is required",
   }),
@@ -127,7 +127,7 @@ export function CreatePodiumForm({
               name="clubId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Club *</FormLabel>
+                  <FormLabel>Club</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -155,7 +155,7 @@ export function CreatePodiumForm({
               name="player"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Player *</FormLabel>
+                  <FormLabel>Player</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter player name" {...field} />
                   </FormControl>
