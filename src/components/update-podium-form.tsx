@@ -72,8 +72,8 @@ export function UpdatePodiumForm({
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      clubId: podium.clubId,
-      player: podium.player,
+      clubId: podium.clubId ?? undefined,
+      player: podium.player ?? undefined,
       category: podium.category,
       place: podium.place,
       points: podium.points as number,
