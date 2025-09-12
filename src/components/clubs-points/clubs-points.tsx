@@ -1,10 +1,7 @@
 "use client";
 
 import { useLiveQuery, ilike } from "@tanstack/react-db";
-import {
-  clubCollection,
-  podiumCollection,
-} from "@/collections";
+import { clubCollection, podiumCollection } from "@/collections";
 import { CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,10 +13,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Search } from "lucide-react";
-import { useState } from "react";
-import { Badge } from "./ui/badge";
+import { useState, useMemo } from "react";
+import { Badge } from "../ui/badge";
+import { columns, ClubWithPoints } from "./columns";
+import { DataTable } from "../ui/data-table";
 
-export function ClubsMedals() {
+export function ClubsPoints() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const {
@@ -40,55 +39,34 @@ export function ClubsMedals() {
     [searchTerm]
   );
 
-  const { 
-    data: podiums, 
-  } = useLiveQuery((q) =>
+  const { data: podiums } = useLiveQuery((q) =>
     q.from({ podiums: podiumCollection })
   );
 
-  function calculateClubsWithMedals() {        
+  const clubsWithPoints: ClubWithPoints[] = useMemo(() => {
     if (!clubs?.length || !Array.isArray(podiums)) {
       return [];
     }
 
     const result = clubs
-      .map((club) => {        
+      .map((club) => {
         const clubPodiums = podiums.filter(
-          (podium) => {
-            const match = podium?.clubId === club?.id;
-            return match;
-          }
+          (podium) => podium.clubId === club.id
         );
-        
-        const medals = {
-          gold: clubPodiums.filter((p) => p?.place === "1").length,
-          silver: clubPodiums.filter((p) => p?.place === "2").length,
-          bronze: clubPodiums.filter((p) => p?.place === "3").length,
-        };
-        
-        return { ...club, medals };
+        const points = clubPodiums.reduce((sum, p) => sum + p.points, 0);
+        return { ...club, points };
       })
-      .sort((a, b) => {
-        if (b.medals.gold !== a.medals.gold) {
-          return b.medals.gold - a.medals.gold;
-        }
-        if (b.medals.silver !== a.medals.silver) {
-          return b.medals.silver - a.medals.silver;
-        }
-        return b.medals.bronze - a.medals.bronze;
-      });
-      
-    return result;
-  }
+      .sort((a, b) => b.points - a.points);
 
-  const clubsWithMedals = calculateClubsWithMedals();
+    return result;
+  }, [clubs, podiums]);
 
   if (isLoading) {
     return (
       <>
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            🏅 Quadro de Medalhas <Badge className="rounded-sm">?</Badge>
+            📊 Quadro de Pontos <Badge className="rounded-sm">?</Badge>
           </CardTitle>
         </div>
         <div className="w-full mt-4">
@@ -122,8 +100,8 @@ export function ClubsMedals() {
     <div>
       <div className="flex justify-between items-center">
         <CardTitle className="flex items-center gap-2">
-          🏅 Quadro de Medalhas{" "}
-          <Badge className="rounded-sm">{clubsWithMedals.length}</Badge>
+          📊 Quadro de Pontos{" "}
+          <Badge className="rounded-sm">{clubsWithPoints.length}</Badge>
         </CardTitle>
         <div className="relative flex-1 max-w-[140px]">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
@@ -136,7 +114,7 @@ export function ClubsMedals() {
         </div>
       </div>
       <div className="w-full mt-4">
-        {clubsWithMedals.length === 0 ? (
+        {clubs.length === 0 ? (
           <div className="text-center py-8">
             {searchTerm ? (
               <div>
@@ -154,40 +132,7 @@ export function ClubsMedals() {
             )}
           </div>
         ) : (
-          <Table>
-            <TableHeader className="bg-card rounded-t-2xl sticky top-0 z-10">
-              <TableRow>
-                <TableHead className="w-[20px] text-center">#</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-[120px] text-center">Gold</TableHead>
-                <TableHead className="w-[120px] text-center">Silver</TableHead>
-                <TableHead className="w-[120px] text-center">Bronze</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {clubsWithMedals.map((club, index) => (
-                <TableRow key={club.id}>
-                  <TableCell className="font-medium">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center">
-                      {index + 1}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    <span className="font-semibold">{club.name}</span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {club.medals.gold}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {club.medals.silver}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {club.medals.bronze}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable columns={columns} data={clubsWithPoints} />
         )}
       </div>
     </div>

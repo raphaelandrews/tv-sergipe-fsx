@@ -1,6 +1,6 @@
 import { createCollection } from "@tanstack/react-db";
 import { electricCollectionOptions } from "@tanstack/electric-db-collection";
-import { selectClubSchema, selectPodiumSchema } from "@/schema";
+import { selectClubSchema, selectPodiumSchema, type Podium } from "@/schema";
 import {
   createClubAction,
   updateClubAction,
@@ -8,7 +8,12 @@ import {
 } from "@/actions/clubs";
 import { createPodiumAction, deletePodiumAction, updatePodiumAction } from "./actions/podiums";
 
-export type { Club, Podium } from "@/schema";
+export type { Club } from "@/schema";
+
+export type Podium = Omit<
+   z.infer<typeof selectPodiumSchema>,
+   "userId" | "createdAt" | "updatedAt"
+ > & { points: number };
 
 export const clubCollection = createCollection(
   electricCollectionOptions({

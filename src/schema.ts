@@ -143,6 +143,6 @@ export const updatePodiumSchema = createUpdateSchema(podiumsTable).omit({
 export type Podium = Omit<
   z.infer<typeof selectPodiumSchema>,
   "userId" | "createdAt" | "updatedAt"
-> & { points: number };
+> & { points: number; clubName?: string };
 export type CreatePodium = z.infer<typeof createPodiumSchema>;
 export type UpdatePodium = z.infer<typeof updatePodiumSchema>;

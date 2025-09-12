@@ -1,13 +1,14 @@
 import { ClientOnly } from "@/components/client-only";
 import { stackServerApp } from "../stack";
-import { ClubsList } from "@/components/clubs-list";
-import { PodiumsList } from "@/components/podiums-list";
-import { ClubsMedals } from "@/components/clubs-medals";
+import { ClubsList } from "@/components/clubs-list/clubs-list";
+import { PodiumsList } from "@/components/podiums-list/podiums-list";
 import { MockupClubs } from "@/components/mockup-clubs";
 import { MedalIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ClubsPoints } from "@/components/clubs-points";
+import { ClubsPoints } from "@/components/clubs-points/clubs-points";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ClubsMedals } from "@/components/clubs-medals/clubs-medals";
 
 export default async function Home() {
   const user = await stackServerApp.getUser({ or: "redirect" });
@@ -28,12 +29,26 @@ export default async function Home() {
         </div>
       </div>
       <ClientOnly>
-        <div className="flex flex-col gap-20">
-          <ClubsMedals />
-          <ClubsPoints />
-          <ClubsList />
-          <PodiumsList />
-        </div>
+        <Tabs defaultValue="medals" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="medals">Medals</TabsTrigger>
+            <TabsTrigger value="points">Points</TabsTrigger>
+            <TabsTrigger value="clubs">Clubs</TabsTrigger>
+            <TabsTrigger value="podiums">Podiums</TabsTrigger>
+          </TabsList>
+          <TabsContent value="medals">
+            <ClubsMedals />
+          </TabsContent>
+          <TabsContent value="points">
+            <ClubsPoints />
+          </TabsContent>
+          <TabsContent value="clubs">
+            <ClubsList />
+          </TabsContent>
+          <TabsContent value="podiums">
+            <PodiumsList />
+          </TabsContent>
+        </Tabs>
       </ClientOnly>
     </main>
   );
