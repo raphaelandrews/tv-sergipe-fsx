@@ -118,7 +118,7 @@ export const podiumsTable = pgTable("podiums", {
   userId: text("user_id")
     .notNull()
     .references(() => userSyncTable.id, { onDelete: "cascade" }),
-  clubId: uuid("club_id")
+  clubId: uuid("clubId")
     .notNull()
     .references(() => clubsTable.id, { onDelete: "cascade" }),
   player: text("player").notNull(),

@@ -4,10 +4,8 @@ import { useLiveQuery, ilike } from "@tanstack/react-db";
 import {
   clubCollection,
   podiumCollection,
-  type Club,
-  type Podium,
 } from "@/collections";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -17,8 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, MoreHorizontal, User } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Search } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "./ui/badge";
 
 export function ClubsMedals() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,27 +40,35 @@ export function ClubsMedals() {
     [searchTerm]
   );
 
-  const { data: podiums } = useLiveQuery((q) =>
+  const { 
+    data: podiums, 
+  } = useLiveQuery((q) =>
     q.from({ podiums: podiumCollection })
   );
 
-  const clubsWithMedals = useMemo(() => {
-    if (!clubs || !podiums) return [];
+  function calculateClubsWithMedals() {        
+    if (!clubs?.length || !Array.isArray(podiums)) {
+      return [];
+    }
 
-    return clubs
-      .map((club) => {
+    const result = clubs
+      .map((club) => {        
         const clubPodiums = podiums.filter(
-          (podium) => podium.clubId === club.id
+          (podium) => {
+            const match = podium?.clubId === club?.id;
+            return match;
+          }
         );
+        
         const medals = {
-          gold: clubPodiums.filter((p) => p.place === "1").length,
-          silver: clubPodiums.filter((p) => p.place === "2").length,
-          bronze: clubPodiums.filter((p) => p.place === "3").length,
+          gold: clubPodiums.filter((p) => p?.place === "1").length,
+          silver: clubPodiums.filter((p) => p?.place === "2").length,
+          bronze: clubPodiums.filter((p) => p?.place === "3").length,
         };
+        
         return { ...club, medals };
       })
       .sort((a, b) => {
-        // Sort by gold, then silver, then bronze
         if (b.medals.gold !== a.medals.gold) {
           return b.medals.gold - a.medals.gold;
         }
@@ -70,119 +77,119 @@ export function ClubsMedals() {
         }
         return b.medals.bronze - a.medals.bronze;
       });
-  }, [clubs, podiums]);
+      
+    return result;
+  }
+
+  const clubsWithMedals = calculateClubsWithMedals();
 
   if (isLoading) {
     return (
-      <Card className="w-full">
-        <CardHeader>
+      <>
+        <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Your Clubs
+            🏅 Quadro de Medalhas <Badge className="rounded-sm">?</Badge>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="w-full mt-4">
           <div className="animate-pulse space-y-4">
-            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-10 bg-ground rounded"></div>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-16 bg-gray-100 rounded"></div>
+              <div key={i} className="h-16 bg-ground rounded"></div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </>
     );
   }
 
   if (isError) {
     return (
-      <Card className="w-full border-red-200 bg-red-50">
-        <CardContent className="pt-6">
-          <p className="text-red-600 text-center">
-            Error loading clubs. Please try again.
-          </p>
-        </CardContent>
-      </Card>
+      <>
+        <div className="flex justify-between items-center">
+          <CardTitle className="flex items-center gap-2">
+            🏅 Quadro de Medalhas <Badge className="rounded-sm">?</Badge>
+          </CardTitle>
+        </div>
+        <div className="w-full mt-4">
+          <p className="text-red-600 text-center">Error. Please try again.</p>
+        </div>
+      </>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <div>
+      <div className="flex justify-between items-center">
         <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5" />
-          Your Clubs ({clubsWithMedals.length})
+          🏅 Quadro de Medalhas{" "}
+          <Badge className="rounded-sm">{clubsWithMedals.length}</Badge>
         </CardTitle>
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search clubs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+        <div className="relative flex-1 max-w-[140px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
+          <Input
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 border-0"
+          />
         </div>
-      </CardHeader>
-      <CardContent>
-        {clubs.length === 0 ? (
+      </div>
+      <div className="w-full mt-4">
+        {clubsWithMedals.length === 0 ? (
           <div className="text-center py-8">
             {searchTerm ? (
               <div>
-                <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">
+                <p className="text-lg">
                   No clubs found matching "{searchTerm}"
                 </p>
-                <p className="text-gray-400 text-sm mt-2">
+                <p className="text-sm mt-2">
                   Try searching with different keywords
                 </p>
               </div>
             ) : (
               <div>
-                <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">No clubs found</p>
-                <p className="text-gray-400 text-sm mt-2">
-                  Create your first club to get started!
-                </p>
+                <p className="text-lg">No clubs found</p>
               </div>
             )}
           </div>
         ) : (
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-card rounded-t-2xl sticky top-0 z-10">
               <TableRow>
-                <TableHead className="w-[200px]">Name</TableHead>
-                <TableHead className="w-[100px]">Gold</TableHead>
-                <TableHead className="w-[100px]">Silver</TableHead>
-                <TableHead className="w-[100px]">Bronze</TableHead>
-                <TableHead className="w-[80px]">Actions</TableHead>
+                <TableHead className="w-[20px] text-center">#</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead className="w-[120px] text-center">Gold</TableHead>
+                <TableHead className="w-[120px] text-center">Silver</TableHead>
+                <TableHead className="w-[120px] text-center">Bronze</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clubsWithMedals.map((club) => (
-                <TableRow key={club.id} className="hover:bg-gray-50">
+              {clubsWithMedals.map((club, index) => (
+                <TableRow key={club.id}>
                   <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                        <User className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <span className="font-semibold text-gray-900">
-                        {club.name}
-                      </span>
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center">
+                      {index + 1}
                     </div>
                   </TableCell>
-                  <TableCell>{club.medals.gold}</TableCell>
-                  <TableCell>{club.medals.silver}</TableCell>
-                  <TableCell>{club.medals.bronze}</TableCell>
-                  <TableCell>
-                    <MoreHorizontal className="h-4 w-4" />
+                  <TableCell className="font-medium">
+                    <span className="font-semibold">{club.name}</span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {club.medals.gold}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {club.medals.silver}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {club.medals.bronze}
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

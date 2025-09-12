@@ -1,8 +1,8 @@
 "use client";
 
-import { useLiveQuery, ilike, or } from "@tanstack/react-db";
+import { useLiveQuery, ilike } from "@tanstack/react-db";
 import { clubCollection, type Club } from "@/collections";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -20,18 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Mail,
-  Phone,
-  Building2,
-  Edit,
-  Trash2,
-  Search,
-  MoreHorizontal,
-  User,
-  Briefcase,
-  Plus,
-} from "lucide-react";
+import { Edit, Trash2, Search, MoreHorizontal, User, Plus } from "lucide-react";
 import { useState } from "react";
 import { UpdateClubForm } from "./update-club-form";
 import { CreateClubForm } from "./create-club-form";
@@ -85,52 +74,55 @@ export function ClubsList() {
 
   if (isLoading) {
     return (
-      <Card className="w-full">
-        <CardHeader>
+      <>
+        <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Your Clubs
+            🏫 Clubs <Badge className="rounded-sm">?</Badge>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="w-full mt-4">
           <div className="animate-pulse space-y-4">
-            <div className="h-10 bg-gray-200 rounded"></div>
+            <div className="h-10 bg-ground rounded"></div>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-16 bg-gray-100 rounded"></div>
+              <div key={i} className="h-16 bg-ground rounded"></div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </>
     );
   }
 
   if (isError) {
     return (
-      <Card className="w-full border-red-200 bg-red-50">
-        <CardContent className="pt-6">
+      <>
+        <div className="flex justify-between items-center">
+          <CardTitle className="flex items-center gap-2">
+            🏫 Clubs <Badge className="rounded-sm">?</Badge>
+          </CardTitle>
+        </div>
+        <div className="w-full mt-4">
           <p className="text-red-600 text-center">
             Error loading clubs. Please try again.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <div>
+      <div className="flex justify-between items-center">
         <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5" />
-          Your Clubs ({clubs.length})
+          🏫 Clubs <Badge className="rounded-sm">{clubs.length}</Badge>
         </CardTitle>
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-[140px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
             <Input
-              placeholder="Search clubs..."
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-0"
             />
           </div>
           <Button
@@ -138,28 +130,26 @@ export function ClubsList() {
             className="flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add Club
+            Add
           </Button>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="w-full mt-4">
         {clubs.length === 0 ? (
           <div className="text-center py-8">
             {searchTerm ? (
               <div>
-                <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">
+                <p className="text-lg">
                   No clubs found matching "{searchTerm}"
                 </p>
-                <p className="text-gray-400 text-sm mt-2">
+                <p className="text-sm mt-2">
                   Try searching with different keywords
                 </p>
               </div>
             ) : (
               <div>
-                <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">No clubs found</p>
-                <p className="text-gray-400 text-sm mt-2">
+                <p className="text-lg">No clubs found</p>
+                <p className="text-sm mt-2">
                   Create your first club to get started!
                 </p>
               </div>
@@ -167,24 +157,23 @@ export function ClubsList() {
           </div>
         ) : (
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-card rounded-t-2xl sticky top-0 z-10">
               <TableRow>
-                <TableHead className="w-[200px]">Name</TableHead>
+                <TableHead className="w-[20px] text-center">#</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead className="w-[80px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clubs.map((club: Club) => (
-                <TableRow key={club.id} className="hover:bg-gray-50">
+              {clubs.map((club: Club, index) => (
+                <TableRow key={club.id}>
                   <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                        <User className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <span className="font-semibold text-gray-900">
-                        {club.name}
-                      </span>
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center">
+                      {index + 1}
                     </div>
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    <span className="font-semibold">{club.name}</span>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -243,17 +232,20 @@ export function ClubsList() {
             </TableBody>
           </Table>
         )}
-      </CardContent>
 
-      {editingClub && (
-        <UpdateClubForm
-          club={editingClub}
-          open={true}
-          onOpenChange={(open: boolean) => !open && setEditingClub(null)}
+        {editingClub && (
+          <UpdateClubForm
+            club={editingClub}
+            open={true}
+            onOpenChange={(open: boolean) => !open && setEditingClub(null)}
+          />
+        )}
+
+        <CreateClubForm
+          open={showCreateForm}
+          onOpenChange={setShowCreateForm}
         />
-      )}
-
-      <CreateClubForm open={showCreateForm} onOpenChange={setShowCreateForm} />
-    </Card>
+      </div>
+    </div>
   );
 }
