@@ -6,8 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { podiumCollection, clubCollection } from "@/collections";
-import { type Podium } from "@/schema";
+import { podiumCollection, clubCollection, type Podium } from "@/collections";
 import { categoryZodEnum, placeZodEnum } from "@/schema";
 import {
   Dialog,

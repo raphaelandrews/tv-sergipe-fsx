@@ -10,6 +10,14 @@ import {
   Search,
   Plus,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { categoryZodEnum } from "@/schema";
 import { useState } from "react";
 import { UpdatePodiumForm } from "@/components/update-podium-form";
 import { CreatePodiumForm } from "@/components/create-podium-form";
@@ -21,6 +29,9 @@ import { columns } from "./columns";
 export function PodiumsList() {
   const [editingPodium, setEditingPodium] = useState<Podium | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined
+  );
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   const {
@@ -40,14 +51,20 @@ export function PodiumsList() {
           clubName: clubs?.name
         }));
 
+      let query = baseQuery;
+      
+      if (selectedCategory) {
+        query = query.where(({ podiums }) => eq(podiums.category, selectedCategory));
+      }
+      
       if (!searchTerm.trim()) {
-        return baseQuery;
+        return query;
       }
 
       const searchPattern = `%${searchTerm}%`;
       return baseQuery.where(({ podiums }) => ilike(podiums.player, searchPattern));
     },
-    [searchTerm]
+    [searchTerm, selectedCategory]
   );
 
   const podiums = podiumsWithClubs?.map(podium => ({
@@ -101,6 +118,24 @@ export function PodiumsList() {
           🏆 Podiums <Badge className="rounded-sm">{podiums.length}</Badge>
         </CardTitle>
         <div className="flex items-center gap-3">
+          <Select
+            value={selectedCategory}
+            onValueChange={(value) =>
+              setSelectedCategory(value === "all" ? undefined : value)
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categoryZodEnum.options.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="relative flex-1 max-w-[140px]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
             <Input

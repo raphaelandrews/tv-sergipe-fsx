@@ -26,7 +26,7 @@ export const columns: ColumnDef<ClubWithMedals>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => (
-      <span className="font-semibold">{row.getValue("name")}</span>
+      <span className="font-semibold text-nowrap">{row.getValue("name")}</span>
     ),
   },
   {

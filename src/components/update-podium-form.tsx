@@ -4,8 +4,7 @@ import { useForm } from "react-hook-form";
 import { useLiveQuery } from "@tanstack/react-db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { podiumCollection, clubCollection } from "@/collections";
-import { type Podium } from "@/schema";
+import { podiumCollection, clubCollection, type Podium } from "@/collections";
 import { categoryZodEnum, placeZodEnum } from "@/schema";
 import {
   Dialog,

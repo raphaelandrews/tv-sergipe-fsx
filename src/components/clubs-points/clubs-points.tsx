@@ -1,25 +1,28 @@
 "use client";
 
-import { useLiveQuery, ilike } from "@tanstack/react-db";
+import { useLiveQuery, ilike, eq } from "@tanstack/react-db";
 import { clubCollection, podiumCollection } from "@/collections";
 import { CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Search } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Badge } from "../ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { categoryZodEnum } from "@/schema";
 import { columns, ClubWithPoints } from "./columns";
 import { DataTable } from "../ui/data-table";
 
 export function ClubsPoints() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined
+  );
 
   const {
     data: clubs,
@@ -39,8 +42,16 @@ export function ClubsPoints() {
     [searchTerm]
   );
 
-  const { data: podiums } = useLiveQuery((q) =>
-    q.from({ podiums: podiumCollection })
+  const { data: podiums } = useLiveQuery(
+    (q) => {
+      if (selectedCategory) {
+        return q
+          .from({ podiums: podiumCollection })
+          .where(({ podiums }) => eq(podiums.category, selectedCategory));
+      }
+      return q.from({ podiums: podiumCollection });
+    },
+    [selectedCategory]
   );
 
   const clubsWithPoints: ClubWithPoints[] = useMemo(() => {
@@ -98,19 +109,39 @@ export function ClubsPoints() {
 
   return (
     <div>
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <CardTitle className="flex items-center gap-2">
           📊 Quadro de Pontos{" "}
           <Badge className="rounded-sm">{clubsWithPoints.length}</Badge>
         </CardTitle>
-        <div className="relative flex-1 max-w-[140px]">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
-          <Input
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 border-0"
-          />
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="relative flex-1 max-w-[140px]">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
+            <Input
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 border-0"
+            />
+          </div>
+          <Select
+            value={selectedCategory}
+            onValueChange={(value) =>
+              setSelectedCategory(value === "all" ? undefined : value)
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categoryZodEnum.options.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <div className="w-full mt-4">

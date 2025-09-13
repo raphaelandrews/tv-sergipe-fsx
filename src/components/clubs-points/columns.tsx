@@ -22,12 +22,12 @@ export const columns: ColumnDef<ClubWithPoints>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => (
-      <span className="font-semibold">{row.getValue("name")}</span>
+      <span className="font-semibold text-nowrap">{row.getValue("name")}</span>
     ),
   },
   {
     accessorKey: "points",
-    header: "Points",
+    header: () => <div className="text-center">Points</div>,
     cell: ({ row }) => (
       <div className="text-center">
         {row.original.points}

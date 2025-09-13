@@ -46,21 +46,21 @@ export const columns = ({
     accessorKey: "player",
     header: "Player",
     cell: ({ row }) => (
-      <span className="font-semibold">{row.getValue("player")}</span>
+      <span className="font-semibold text-nowrap">{row.getValue("player")}</span>
     ),
   },
   {
     accessorKey: "category",
     header: "Category",
     cell: ({ row }) => (
-      <span className="font-semibold">{row.getValue("category")}</span>
+      <span className="font-semibold text-nowrap">{row.getValue("category")}</span>
     ),
   },
   {
     accessorKey: "clubName",
     header: "Club",
     cell: ({ row }) => (
-      <span className="font-semibold">{row.original.clubName}</span>
+      <span className="font-semibold text-nowrap">{row.original.clubName}</span>
     ),
   },
   {

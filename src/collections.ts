@@ -1,13 +1,13 @@
 import { createCollection } from "@tanstack/react-db";
 import { electricCollectionOptions } from "@tanstack/electric-db-collection";
 import { selectClubSchema, selectPodiumSchema } from "@/schema";
+import { z } from "zod";
 import {
   createClubAction,
   updateClubAction,
   deleteClubAction,
 } from "@/actions/clubs";
 import { createPodiumAction, deletePodiumAction, updatePodiumAction } from "./actions/podiums";
-import z from "zod";
 
 export type { Club } from "@/schema";
 
