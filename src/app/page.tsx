@@ -2,7 +2,6 @@ import { ClientOnly } from "@/components/client-only";
 import { stackServerApp } from "../stack";
 import { ClubsList } from "@/components/clubs-list/clubs-list";
 import { PodiumsList } from "@/components/podiums-list/podiums-list";
-import { MockupClubs } from "@/components/mockup-clubs";
 import { MedalIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

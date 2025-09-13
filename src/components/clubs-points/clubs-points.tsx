@@ -77,7 +77,7 @@ export function ClubsPoints() {
       <>
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            📊 Quadro de Pontos <Badge className="rounded-sm">?</Badge>
+            📊 Points <Badge className="rounded-sm">?</Badge>
           </CardTitle>
         </div>
         <div className="w-full mt-4">
@@ -97,7 +97,7 @@ export function ClubsPoints() {
       <>
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
-            🏅 Quadro de Medalhas <Badge className="rounded-sm">?</Badge>
+            🏅 Leaderboard <Badge className="rounded-sm">?</Badge>
           </CardTitle>
         </div>
         <div className="w-full mt-4">
@@ -111,7 +111,7 @@ export function ClubsPoints() {
     <div>
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <CardTitle className="flex items-center gap-2">
-          📊 Quadro de Pontos{" "}
+          📊 Points {" "}
           <Badge className="rounded-sm">{clubsWithPoints.length}</Badge>
         </CardTitle>
         <div className="flex flex-col md:flex-row gap-4">
